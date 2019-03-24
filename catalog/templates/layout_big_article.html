@@ -1,0 +1,43 @@
+{% for article in articles %}
+    {% if article.is_published %}
+        {% if forloop.first %}
+            <div class="jumbotron">
+        {%else%}
+            {% if forloop.counter|divisibleby:"2"%}
+                <div class="row justify-content-center">
+            {%endif%}
+            <div class="col-sm-5">
+
+        {%endif%}
+        <div class="article-wrapper">
+            <a href=" {% url 'post_detail' pk=article.id %} "> <h1>{{article.title}}</h1></a>
+            <p class="authors"> Published {{ article.pub_date }} <br>
+                {% for author in article.author.all %}
+                {% if author.first_name != "" %}
+                <a href="{% url 'profile' id=author.id %}">{{ author.first_name }}</a>,
+                {% endif %}
+                {% endfor %}
+            </p>
+            <img src="{{article.get_image}}" style="max-width: 100%; height:auto;"/>
+            {% if  forloop.first %}
+            <p>
+                <a href=" {% url 'post_detail' pk=article.id %} ">   {{article.text|safe|truncatewords:200}}</a>
+            </p>
+            {%else%}
+            <p>
+                <a href=" {% url 'post_detail' pk=article.id %} ">   {{article.text|safe|truncatewords:50}}</a>
+            </p>
+            {%endif%}
+            {% for tag in article.tag.all %}
+            <a href="{% url 'index_tag' tag=tag %}" style="color:gray;"><span class="fa fa-tag"></span> {{ tag }} </a>
+            {% endfor %}
+            <br>
+            <br>
+        </div>
+    </div>
+    {% if forloop.counter0|divisibleby:"2" and not forloop.counter0 == 0%}
+        </div>
+    {%endif%}
+
+{% endif %}
+{% endfor %}

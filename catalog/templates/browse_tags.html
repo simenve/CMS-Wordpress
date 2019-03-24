@@ -1,0 +1,60 @@
+{% extends "base_template.html" %}
+
+{%block css%}
+    .linkstyle {
+        margin-top: 10px;
+        height: auto;
+        width: 200px;
+    }
+
+    .row{
+        margin-top: 5vh;
+    }
+    .col{
+        max-width: 200px;
+        margin:10px;
+
+
+    }
+    .content{
+        max-width:750px;
+        width: 100%;
+    }
+
+{%endblock%}
+{% block content %}
+    <div class="container">
+    {% for tag in tags %}
+        {%if forloop.counter0|divisibleby:"3"%}
+            <div class="row">
+        {%endif%}
+                <div class="col">
+                    <a class="btn btn-primary linkstyle" href="{% url 'index_tag' tag=tag.name %}">{{tag}}</a>
+                </div>
+        {%if forloop.counter|divisibleby:"3" or forloop.last%}
+            </div>
+        {%endif%}
+
+    {% endfor %}
+
+    {% if user.is_executive_editor or user.is_superuser %}
+    <div class="row">
+        <form method="POST" class="">
+            <fieldset>
+                <legend>Add new tag</legend>
+                {% csrf_token %}
+                <span class="error">{{form.name.errors}}</span>
+                {{ form.name }}
+                <div class="">
+                    <button type="submit" class="btn btn-outline-info">Submit</button>
+                </div>
+            </fieldset>
+        </form>
+        <script>
+            document.getElementById("id_name").placeholder="Tag name";
+        </script>
+    </div>
+    {% endif %}
+    </div>
+
+{% endblock %}

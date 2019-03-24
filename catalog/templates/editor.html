@@ -1,0 +1,48 @@
+{% extends "base_template.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block css %}
+    .article-wrapper {
+        overflow: hidden;
+        max-width: 600px;
+        margin: 0 auto 10px auto;
+        padding: 10px 30px 0 30px;
+        background-color: white;
+        border: 1px solid;
+        border-color: lightgray;
+        border-radius: 5px;
+
+    }
+
+{% endblock %}
+
+{% block content %}
+{% for article in articles %}
+    {% if not article.is_published %}
+            <div class="article-wrapper">
+                <a style="color:black;" href="{% url 'post_detail' pk=article.id%}">
+                    {% if article.is_reviewed %}
+                    <h1 style="color:green">{{article.title}}</h1>
+                    {% else %}
+                    <h1 style="color:red">{{article.title}}</h1>
+                    {% endif %}
+                    <p>
+                            {{article.text|safe|truncatewords:50}}
+                    </p>
+                    <p>Assigned for proofreading:
+                    {% for proof_reader in article.assigned_proof_read.all %} {{proof_reader}},
+                    {%endfor%}
+                    </p>
+                </a>
+                {% for tag in article.tag.all %}
+                    <a href="{% url 'index_tag' tag=tag %}" style="color:gray;"><span class="fa fa-tag"></span> {{ tag.name }} </a>
+                {% endfor %}
+                <form method="POST">
+                    {{ form }}
+                </form>
+                <br>
+            </div>
+    {% endif %}
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base_template.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block css %}
+
+    .test{
+{% for c in color%}
+     color:{{c}}
+{% endfor %}
+    }
+    .article-wrapper {
+        overflow: hidden;
+        margin: 0 auto 10px auto;
+        padding: 10px 30px 0 30px;
+        background-color: white;
+        border: 1px solid;
+        border-color: lightgray;
+        border-radius: 5px;
+    }
+
+    .wrapper-width{
+        max-width: 600px;
+    }
+    .authors {
+        font-size:13px;
+    }
+    a {
+        color:black;
+    }
+    .jumbotron {
+        background: none
+    }
+{% endblock %}
+
+{% block content %}
+
+{%if user.is_admin and not index_tag and not search_tag %}
+<div class="container border border-gray rounded bg-light">
+    <div class="form-row justify-content-center">
+        <div class="col-sm-5">
+            <p>Change color of navbar:</p>
+            <form method="post">
+                {% csrf_token %}
+                {{color_form}}
+                <input type="submit">
+            </form>
+            {% for c in color%}
+                <p class="test">Current color: {{c}}</p>
+            {% endfor %}
+        </div>
+        <div class="col-sm-5">
+            <p>Change layout:</p>
+            <form method="post">
+                {% csrf_token %}
+                {{layout_form}}
+                <input type="submit">
+            </form>
+            <p>Current layout: {{layout}}</p>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    document.getElementById("id_color").placeholder = "Red, #ff0000";
+</script>
+{%endif%}
+
+<div class="container">
+    {%with var=layout%}
+    {%include var %}
+    {%endwith%}
+</div>
+
+
+{% endblock %}
+

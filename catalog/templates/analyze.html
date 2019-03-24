@@ -1,0 +1,128 @@
+{% extends "base_template.html" %}
+{% block head %}
+    <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css rel="stylesheet"/>
+{% endblock %}
+{% block css %}
+    .fa-check {
+        color:#4BB543;
+    }
+    .table-row-link {
+        cursor:pointer;
+    }
+{% endblock %}
+{% block content %}
+<div class="user-stats">
+    <h1>Registered users</h1>
+    <table class="table table-sm table-hover table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Published</th>
+                <th>Following</th>
+                <th>Sub to tag</th>
+                <th>Favorites</th>
+                <th>Author</th>
+                <th>Editor</th>
+                <th>Exec</th>
+            </tr>
+        </thead>
+    {% for u in users %}
+        <tr class="table-row-link" data-href="{% url 'profile' id=u.id%}" >
+            <th>{{forloop.counter}}</th>
+            <td>{{u.name}}</td>
+            <td>{{u.num_articles}}</td>
+            <td>{{u.num_following}}</td>
+            <td>{{u.num_tag}}</td>
+            <td>{{u.favorites.all.count}}</td>
+            <td>{%if u.is_author%} <span  class="fas fa-check"></span>{% endif %}</td>
+            <td>{%if u.is_editor%} <span  class="fas fa-check"></span>{% endif %}</td>
+            <td>{%if u.is_executive_editor%} <span  class="fas fa-check"></span>{% endif %}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+<br>
+<hr>
+<br>
+<div class="article-stats">
+    <h1>Articles</h1>
+    <table class="table table-sm table-hover table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Avg. rating</th>
+                <th>Comments</th>
+                <th>Favorites</th>
+                <th>Published</th>
+                <th>Reviewed</th>
+            </tr>
+        </thead>
+        <thead>
+             <tr>
+                <th>Averages:</th>
+                <th></th>
+                <th>{{ avg_rating_all.ratecomments__rating__avg | floatformat:2 }}</th>
+                <th>{{ avg_comments_all  | floatformat:2 }}</th>
+                <th>{{ avg_favorites_all | floatformat:2 }}</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+    {% for a in articles %}
+        <tr class="table-row-link" data-href="{% url 'post_detail' pk=a.id%}" >
+            <th>{{forloop.counter}}</th>
+            <td>{{a.title}}</td>
+            <td>{% if a.avg_rating == None %} 0 {% else %} {{a.avg_rating}} {% endif %}</td>
+            <td>{{a.num_comments}}</td>
+            <td>{{a.num_favorites}}</td>
+            <td>{%if a.is_published%}{{a.last_edited|date:"d/m-y H:i"}}{% endif %}</td>
+            <td class="clickable-row">{%if a.is_reviewed%} <span  class="fas fa-check"></span>{% endif %}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+<div class="tag-stats" style="width:50%">
+    <h1>Tags</h1>
+    <table class="table table-sm table-hover table-striped";>
+        <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Subscribers</th>
+                <th>Published Articles</th>
+            </tr>
+        </thead>
+         <thead>
+             <tr>
+                <th>Averages:</th>
+                <th></th>
+                <th>{{ avg_tag_all | floatformat:2 }}</th>
+                <th>{{ avg_tag_all | floatformat:2 }}</th>
+            </tr>
+        </thead>
+    {% for t in tags %}
+        <tr class="table-row-link" data-href="{% url 'index_tag' tag=t.name %}" >
+            <th>{{forloop.counter}}</th>
+            <td>{{t.name}}</td>
+            <td>{{t.num_subs}}</td>
+            <td>{{t.num_articles}}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript">
+    $(document).ready( function () {
+        $('table.table').DataTable();
+
+        $(".table-row-link").click(function() {
+        window.location = $(this).data("href");
+    } );
+    });
+</script>
+{% endblock %}

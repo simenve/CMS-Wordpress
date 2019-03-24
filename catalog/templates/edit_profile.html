@@ -1,0 +1,23 @@
+{% extends 'base_template.html' %}
+{% block css %}
+    .formWrapper {
+        margin: 10px auto 0 auto;
+        width: 50%;
+        max-width:300px;
+    }
+    input[type=text] {
+        width:300px;
+    }
+{% endblock %}
+
+{% block content %}
+    <div class="formWrapper">
+    <form method="POST" class="" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <div class="postbutton">
+        <button type="submit" class="btnSubmit">Submit</button>
+        </div>
+    </form>
+    </div>
+{% endblock %}

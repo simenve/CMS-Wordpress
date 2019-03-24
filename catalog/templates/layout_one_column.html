@@ -1,0 +1,30 @@
+{% for article in articles %}
+    {% if article.is_published %}
+        <div class="article-wrapper wrapper-width">
+            <a href=" {% url 'post_detail' pk=article.id %} "> <h1>{{article.title}}</h1></a>
+                <p class="authors"> Published {{ article.pub_date }} <br>
+                    {% for author in article.author.all %}
+                        {% if author.first_name != "" %}
+                    <a href="{% url 'profile' id=author.id %}">{{ author.first_name }}</a>,
+                        {% endif %}
+                    {% endfor %}
+                </p>
+                <img src="{{article.get_image}}" style="max-width: 30%; height:auto;"/>
+                {% if  forloop.first %}
+                <p>
+                    <a href=" {% url 'post_detail' pk=article.id %} ">   {{article.text|safe|truncatewords:200}}</a>
+                </p>
+                {%else%}
+                <p>
+                    <a href=" {% url 'post_detail' pk=article.id %} ">   {{article.text|safe|truncatewords:50}}</a>
+                </p>
+                {%endif%}
+            {% for tag in article.tag.all %}
+                <a href="{% url 'index_tag' tag=tag %}" style="color:gray;"><span class="fa fa-tag"></span> {{ tag }} </a>
+            {% endfor %}
+            <br>
+            <br>
+        </div>
+    </div>
+{% endif %}
+{% endfor %}

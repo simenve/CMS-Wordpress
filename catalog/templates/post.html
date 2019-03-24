@@ -1,0 +1,102 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+    <script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=1p9ts034bplyfljcd1oa3bb69cw1ipcuquk9431k51j1e6rj"></script>
+    <script>tinymce.init({ selector: 'textarea' });</script>
+
+    <div class="newarticle">
+        <div class="container">
+    <form method="POST" class="post-form" enctype="multipart/form-data"> <!--Man må inkludere encryption type når man uploader filer -->
+        {% csrf_token %}
+
+        {% for field in form %}
+            {% if forloop.counter0 >= 2%}
+                {% if forloop.counter0|divisibleby:"2"%}
+                <div class="row justify-content-center">
+                {%endif%}
+                    <div class="col">
+                <label>{{ field.label }}</label>
+                {{ field }}
+                    </div>
+
+            {% if forloop.counter|divisibleby:"2" or forloop.last%}
+                </div>
+                {%endif%}
+            {%else%}
+            <div class="row">
+                <label>{{ field.label }}</label>
+                {{ field }}
+            </div>
+            {%endif%}
+        {% endfor %}
+
+        <div class="postbutton">
+            <button type="submit" class="btnSubmit" name="submit">Submit</button>
+        </div>
+        {% if article %} <!--#sjekker om article finnes fra før og ikke publisert -->
+            {% if not article.is_published or user.is_superuser %}
+                <div class="postbutton">
+                    <button type="submit" class="btnSubmit delete" name="delete">Delete '{{ article }}'</button>
+                </div>
+            {% endif %}
+        {% endif %}
+    </form>
+    </div>
+    </div>
+{% endblock %}
+
+{% block css %}
+        input[type=text] {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid lightslategray;
+            border-radius: 6px;
+            box-sizing: border-box;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        select {
+            width: 40%;
+        }
+        label{
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            font-size:20px;
+            height: 0;
+        }
+
+        .postbutton{
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .btnSubmit {
+            background-color: #343a40;
+            color: white;
+            padding: 12px 20px;
+            border: 1px solid #343a40 ;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 50%;
+            text-align: center;
+            margin: 0 auto;
+            margin-top: 10px;
+
+        }
+
+        button:hover {
+            background-color: lightgray;
+            color: black;
+        }
+
+        .delete{
+            background-color:darkred;
+        }
+
+        .content{
+        }
+
+
+{% endblock %}

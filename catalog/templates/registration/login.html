@@ -1,0 +1,29 @@
+{% extends "base_template.html" %}
+{% block title %}login{% endblock %}
+
+
+{% block css %}
+    .form {
+       padding:30px;
+       max-width: 400px;
+       width: 100%;
+       margin: 50px auto 0 auto;
+    }
+    input {
+        float: right;
+    }
+{% endblock %}
+
+{% block content %}
+<div class="form">
+    <form method="post">
+    <fieldset>
+        <legend class="border-bottom mb4">Log in</legend>
+        {% csrf_token %}
+        {{ form.as_p }}
+    </fieldset>
+    <button class="btn btn-outline-info"  type="submit">Login</button>
+  </form>
+</div>
+
+{% endblock %}

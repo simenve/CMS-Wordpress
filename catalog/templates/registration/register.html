@@ -1,0 +1,32 @@
+{% extends "base_template.html" %}
+{% block content %}
+        <style>
+            .form {
+               padding:30px;
+               max-width: 700px;
+               width: 100%;
+               margin: 50px auto 0 auto;
+            }
+            input {
+                float: right;
+            }
+        </style>
+       <div class = "form">
+            <form method = "POST">
+                {% csrf_token %}
+                <fieldset>
+                    <legend class ="border-bottom mb4"> Register Today! </legend>
+                    {{ form.as_p }}
+                </fieldset>
+                <div class = "form-group">
+                    <button class = "btn btn-outline-info" type="submit">Register</button>
+                </div>
+            </form>
+
+            <div class="border-top pt-3">
+                <small class="text-muted">
+                    Already registered? <a class="ml-2" href="{% url 'login' %}">Sign in here</a>
+                </small>
+            </div>
+       </div>
+{% endblock %}

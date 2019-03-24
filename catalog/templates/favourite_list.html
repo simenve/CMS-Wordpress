@@ -1,0 +1,54 @@
+{% extends "base_template.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block css %}
+    .article-wrapper {
+        max-width: 600px;
+        margin: 0 auto 10px auto;
+        padding: 10px 30px 0 30px;
+        background-color: white;
+        border: 1px solid;
+        border-color: lightgray;
+        border-radius: 5px;
+    }
+    .authors {
+        font-size:13px;
+    }
+    a {
+        color:black;
+    }
+{% endblock %}
+
+{% block content %}
+{% if not articles%}
+<h3>No articles in favorite list</h3>
+{%endif%}
+{% for article in articles %}
+    {% if article.is_published %}
+        <div class="article-wrapper">
+            <a href=" {% url 'post_detail' pk=article.id %} "> <h1>{{article.title}}</h1></a>
+
+
+                <p class="authors"> Published {{ article.pub_date }} <br>
+                    {% for author in article.author.all %}
+                        {% if author.first_name != "" %}
+                    <a href="{% url 'profile' id=author.id %}">{{ author.first_name }}</a>,
+                        {% endif %}
+                    {% endfor %}
+                </p>
+                <img src="{{article.thumb.url}}" style="max-width: 30%; height:auto;"/>
+                <p>
+                         <a href=" {% url 'post_detail' pk=article.id %} ">   {{article.text|safe|truncatewords:50}}</a>
+                </p>
+            {% for tag in article.tag.all %}
+                <a href="../{{tag.id}}" style="color:gray;"><span class="fa fa-tag"></span> {{ tag }} </a>
+            {% endfor %}
+            <br>
+            <br>
+        </div>
+
+{% endif %}
+{% endfor %}
+{% endblock %}
+

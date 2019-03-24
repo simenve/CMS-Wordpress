@@ -1,0 +1,108 @@
+{% extends 'base_template.html' %}
+
+{% block css %}
+    .articleWrapper {
+        max-width: 600px;
+        padding: 10px 30px 0 30px;
+        background-color: white;
+        border: 1px solid;
+        border-color: lightgray;
+        border-radius: 5px;
+        margin: 0 0 20px 0;
+        overflow: hidden;
+    }
+    .sidebarWrapper {
+        height: 100%;
+        width:250px;
+        position:fixed;
+        margin-left:-250px;
+        overflow-y: auto;
+        z-index: 10;
+        padding: 0 0 0 4px;
+    }
+    .wrapper {
+        margin: 0 auto 10px auto;
+        max-width: 600px;
+        padding-left: -250px;
+    }
+    .imgProfilePic {
+        border-radius: 50%;
+        border: 2px solid;
+    }
+    .bio {
+        background-color: white;
+        border: 1px solid;
+        border-color: lightgray;
+        width:90%;
+        padding: 4px;
+    }
+    a {
+        color:black;
+    }
+    #id_role {
+        margin-bottom: 3px;
+        width:200px;
+        height: 30px;
+    }
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+
+    <!--TODO: responsiv design -->
+    <div class="sidebarWrapper">
+        <img class="imgProfilePic" src="{{u.get_image}}" width="200px" height="200px">
+        <br><br>
+        {% if u == user %}
+        <a href="{% url 'profile_edit' id=user.id %}" class="btn btn-outline"><span class="fas fa-user-edit"></span> Edit profile</a>
+        {% endif %}
+       <div class="requestForm">
+            {% if request_form and u == user%}
+                <form method="post">
+                    {{ request_form.role }}
+                    {% csrf_token %}
+                    <p><button class="btn btn-outline-info"type="submit">Send request</button></p>
+                </form>
+            <script type="text/javascript">
+                document.getElementById("id_role").options[0].disabled=true;
+            </script>
+            {%  endif %}
+        </div>
+        <h4>{{u.name}}</h4>
+        <form method="POST">
+                {% csrf_token %}
+                {% if u in user.subscribe_author.all %}
+                    <input type="submit" value="Unsubscribe" name="unsubscribe" class="favorite btn btn-outline-danger"></input>
+                {% else %}
+                    <input type="submit" value="Subscribe" name="subscribe" class="favorite btn btn-outline-success"></input>
+                {% endif %}
+        </form>
+        <p class="bio">{{u.bio}}</p>
+        <h5>Roles:</h5>
+        <ul>
+            {% if u.is_superuser %}
+            <li>Admin</li>
+            {% elif u.is_executive_editor %}
+            <li>Executive editor</li>
+            {% elif u.is_editor %}
+            <li>Editor</li>
+            {% endif %}
+            {% if u.is_author %}
+            <li>Author</li>
+            {% endif %}
+        </ul>
+        <h5>Articles published: {{users_articles.count}}</h5>
+    </div>
+
+    <div>
+        {% for article in users_articles %}
+            <div class="articleWrapper">
+                <a href="{% url 'post_detail' pk=article.id %}"><h3>{{article.title}}</h3></a>
+                <p style="font-size: 10px;">{{article.pub_date}}</p>
+                <hr>
+                <a href="{% url 'post_detail' pk=article.id %}"><p>{{article.text | truncatewords:100 |safe}}</p></a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

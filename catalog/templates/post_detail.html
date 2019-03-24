@@ -1,0 +1,152 @@
+{% extends 'base_template.html' %}
+{% block css %}
+    #content {
+        padding: 0 60px 30px 60px;
+        background-color:white;
+    }
+    .comment {
+
+    }
+
+    .twocol {
+        -webkit-column-count: 2;
+        -moz-column-count: 2;
+        column-count: 2;
+}
+    .dateTime {
+        font-size: 13px;
+    }
+    .favorite {
+            background-color: #343a40;
+            color: white;
+            padding: 12px 20px;
+            border: 1px solid #343a40 ;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 20%;
+            text-align: center;
+            margin: 0 auto;
+            margin-top: 10px;
+    }
+    input[name="delete"] {
+        background-color:darkred;
+
+    }
+    .social {
+        font-size: 32px;
+    }
+    .fa-instagram{
+        color:white;
+        padding: 1px 3px 1px 2px;
+        border-radius: 8px;
+        background: #f09433;
+        background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+    }
+{% endblock %}
+{% block content %}
+    <div id="content">
+       <a href="{% url 'post_detail' pk=article.pk %}"></a>
+        <h1>{{ article.title }}</h1>
+        <br>
+        <p class="authors"> By:
+            {% for author in article.author.all %}
+                {% if author.first_name != "" %}
+                    <a href="{% url 'profile' id=author.id %}">
+                    {{ author.first_name }}
+                {% endif %}
+            {% endfor %}
+            </a>
+        </p>
+
+        <p class="dateTime">
+
+            {{ article.pub_date }} | Last edited: {{ article.last_edited }}
+        </p>
+        {% if user.is_authenticated %}
+            <form method="GET">
+                {% csrf_token %}
+                {% if article in user.favorites.all %}
+                    <input type="submit" value="Remove from favorites" name="delete" class="favorite"></input>
+                {% else %}
+                    <input type="submit" value="Add to favorites" name="favorite" class="favorite"></input>
+                {% endif %}
+            </form>
+                {% if user in article.assigned_proofread.all or user in article.author.all or user.is_executive_editor%}
+                    <hr>
+                    <a href="{% url 'post_edit' pk=article.id %}"><span class="far fa-edit"></span> Edit article </a>
+                {% endif %}
+        {% endif %}
+        <hr>
+        {%if article.layout == 'LO1' %}
+            <img src="{{article.get_image}}" style="max-width: 70%; height:auto;"/>
+            <p>{{ article.text|safe }}</p>
+        {% endif %}
+
+        {%if article.layout == 'LO2' %}
+            <img src="{{article.get_image}}" style="max-width: 70%; height:auto;"/>
+            <div class="twocol">{{ article.text|safe }} </div>
+        {% endif %}
+
+        {%if article.layout == 'LO3' %}
+            <p>{{ article.text|safe }}</p>
+            <img src="{{article.get_image}}" style="max-width: 70%; height:auto;"/>
+        {% endif %}
+
+        <br>
+        <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=localhost/{{request.get_full_path}}" style="color:#3b5998;" class="social fab fa-facebook"></a>
+        <a target="_blank" href="#" style="color:#00aced;" class="social fab fa-twitter"></a>
+        <a target="_blank" href="#" class="social fab fa-instagram"></a>
+        <br>
+    </div>
+    <hr>
+    {% if not article.is_published %}
+        {% for comment in comments %}
+        <div class="comment">
+            <p class="info">{{ comment.name }} <br><span style="font-size:12px;">{{ comment.created }}</span></p>
+            {{ comment.body|linebreaks }}
+        </div>
+        <hr>
+        {% empty %}
+        <p>There are no comments yet.</p>
+        {% endfor %}
+        {% if comment_form %}
+            {% if new_comment %}
+            <h2>Your comment has been added.</h2>
+            {% else %}
+            <h2>Add a new comment</h2>
+            <form action="." method="post">
+                {{ comment_form.as_p }}
+                {% csrf_token %}
+                <p><input type="submit" value="Add comment"></p>
+            </form>
+        {%  endif %}
+    {% endif %}
+    {% endif %}
+    {% if user.is_authenticated and article.is_published %}
+        {% for ratecomment in ratecomments %}
+            <div class="comment">
+                <p class="info">{{ ratecomment.name }} <br><span style="font-size:12px;">{{ ratecomment.created }}</span></p>
+                {{ ratecomment.body|linebreaks }}
+                <p class="info">Rating: {{ ratecomment.rating }}</p>
+            </div>
+            <hr>
+            {% empty %}
+            <p>There are no comments yet.</p>
+            {% endfor %}
+            {% if ratecomment_form %}
+                {% if new_ratecomment %}
+                <h2>Your comment has been added.</h2>
+                {% else %}
+                <h2>Add a new comment</h2>
+                <form action="." method="post">
+                    {{ ratecomment_form.as_p }}
+                    {% csrf_token %}
+                    <p><input type="submit" value="Add comment"></p>
+                </form>
+            {%  endif %}
+            {% endif %}
+            {% elif not user.is_authenticated %}
+                <h4>Please <a href="{% url 'login' %}?next={{request.path}}">sign in</a> to add or view comments</h4>
+            {% endif %}
+{% endblock %}
+
